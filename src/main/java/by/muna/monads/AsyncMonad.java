@@ -44,5 +44,5 @@ public interface AsyncMonad<R, E> {
         });
     }
 
-    public abstract void run(BiConsumer<R, E> callback);
+    public void run(BiConsumer<R, E> callback);
 }
