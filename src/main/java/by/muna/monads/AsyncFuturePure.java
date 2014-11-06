@@ -2,7 +2,7 @@ package by.muna.monads;
 
 import java.util.function.Consumer;
 
-public class AsyncFuturePure<T> implements AsyncFuture<T> {
+public class AsyncFuturePure<T> implements IAsyncFuture<T> {
     private T value;
 
     public AsyncFuturePure(T value) {

@@ -9,14 +9,14 @@ import java.util.function.Function;
  * @param <E>
  */
 @FunctionalInterface
-public interface AsyncMonad<R, E> {
-    default <NR> AsyncMonad<NR, E> bind(Function<R, AsyncMonad<NR, E>> f) {
+public interface IAsyncMonad<R, E> {
+    default <NR> IAsyncMonad<NR, E> bind(Function<R, IAsyncMonad<NR, E>> f) {
         return this.bind(f, x -> x);
     }
-    default <NR, NE> AsyncMonad<NR, NE> bind(Function<R, AsyncMonad<NR, NE>> f, Function<E, NE> convertError) {
-        return callback -> AsyncMonad.this.run((x, e) -> {
+    default <NR, NE> IAsyncMonad<NR, NE> bind(Function<R, IAsyncMonad<NR, NE>> f, Function<E, NE> convertError) {
+        return callback -> IAsyncMonad.this.run((x, e) -> {
             if (e == null) {
-                AsyncMonad<NR, NE> m = f.apply(x);
+                IAsyncMonad<NR, NE> m = f.apply(x);
                 m.run(callback);
             } else {
                 callback.accept(null, convertError.apply(e));
@@ -24,8 +24,8 @@ public interface AsyncMonad<R, E> {
         });
     }
 
-    default <NR> AsyncMonad<NR, E> skip(AsyncMonad<NR, E> m) {
-        return callback -> AsyncMonad.this.run((x, e) -> {
+    default <NR> IAsyncMonad<NR, E> skip(IAsyncMonad<NR, E> m) {
+        return callback -> IAsyncMonad.this.run((x, e) -> {
             if (e == null) {
                 m.run(callback);
             } else {
@@ -34,8 +34,8 @@ public interface AsyncMonad<R, E> {
         });
     }
 
-    default <NR> AsyncMonad<NR, E> fmap(Function<R, NR> f) {
-        return callback -> AsyncMonad.this.run((x, e) -> {
+    default <NR> IAsyncMonad<NR, E> fmap(Function<R, NR> f) {
+        return callback -> IAsyncMonad.this.run((x, e) -> {
             if (e == null) {
                 callback.accept(f.apply(x), null);
             } else {

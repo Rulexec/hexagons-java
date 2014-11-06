@@ -3,14 +3,14 @@ package by.muna.monads;
 import java.util.function.Function;
 
 public class AsyncMonadUtil {
-    public static <L, M, R, E> Function<L, AsyncMonad<R, E>> composeL(
-            Function<L, AsyncMonad<M, E>> left,
-            Function<M, AsyncMonad<R, E>> right)
+    public static <L, M, R, E> Function<L, IAsyncMonad<R, E>> composeL(
+            Function<L, IAsyncMonad<M, E>> left,
+            Function<M, IAsyncMonad<R, E>> right)
     {
         return a -> left.apply(a).bind(right);
     }
 
-    public static <R, NR, E> Function<R, AsyncMonad<NR, E>> lift(Function<R, NR> f) {
+    public static <R, NR, E> Function<R, IAsyncMonad<NR, E>> lift(Function<R, NR> f) {
         return x -> new AsyncMonadPure<>(f.apply(x));
     }
 

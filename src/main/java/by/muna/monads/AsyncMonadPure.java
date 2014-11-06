@@ -2,7 +2,7 @@ package by.muna.monads;
 
 import java.util.function.BiConsumer;
 
-public class AsyncMonadPure<T, E> implements AsyncMonad<T, E> {
+public class AsyncMonadPure<T, E> implements IAsyncMonad<T, E> {
     private T value;
     private E error;
 
