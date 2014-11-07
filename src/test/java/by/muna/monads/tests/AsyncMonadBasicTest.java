@@ -1,8 +1,8 @@
 package by.muna.monads.tests;
 
-import by.muna.monads.IAsyncMonad;
 import by.muna.monads.AsyncMonadPure;
 import by.muna.monads.AsyncMonadUtil;
+import by.muna.monads.IAsyncMonad;
 import org.junit.Assert;
 import org.junit.Test;
 

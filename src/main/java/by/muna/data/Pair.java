@@ -1,7 +1,5 @@
 package by.muna.data;
 
-import by.muna.data.IPair;
-
 public class Pair<F, S> extends Single<F> implements IPairMutable<F, S> {
     protected S second;
 
