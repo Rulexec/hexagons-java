@@ -24,7 +24,7 @@ public class AsyncStreamUtil {
 
         Container c = new Container();
 
-        input.onData(reader -> {
+        input.onCanRead(reader -> {
             synchronized (c) {
                 int readed = reader.read(c.buffer, c.offset);
 
@@ -49,6 +49,8 @@ public class AsyncStreamUtil {
                         c.endAfterWriting = true;
                     }
                 }
+
+                return true;
             }
         });
         output.onCanWrite(writer -> {
@@ -78,9 +80,11 @@ public class AsyncStreamUtil {
                     output.end();
                 }
 
-                return done;
+                return !done;
             }
         });
+
+        input.requestReading();
         output.requestWriting();
     }
 }
