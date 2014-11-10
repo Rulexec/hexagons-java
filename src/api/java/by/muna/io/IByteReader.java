@@ -1,7 +1,5 @@
 package by.muna.io;
 
-import by.muna.io.poppedbuffer.PoppedBuffer;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -25,7 +23,7 @@ public interface IByteReader {
     }
 
     default int read(ByteBuffer buffer) {
-        final int BUFFER_SIZE = Math.max(1024, this.available());
+        /*final int BUFFER_SIZE = Math.max(1024, this.available());
 
         byte[] array = new byte[BUFFER_SIZE];
         int offset = 0;
@@ -44,17 +42,44 @@ public interface IByteReader {
             totalReaded += readed;
         }
 
+        return totalReaded;*/
+        return this.read(new IByteWriter() {
+            @Override
+            public int write(ByteBuffer buff) {
+                int canWrite = Math.min(buff.remaining(), buffer.remaining());
+                ByteBuffer b = (ByteBuffer) buffer.slice().limit(buffer.position() + canWrite);
+                buff.put(b);
+                return canWrite;
+            }
+
+            @Override
+            public int write(byte[] buff, int offset, int length) {
+                int canWrite = Math.min(length, buffer.remaining());
+                buffer.get(buff, offset, canWrite);
+                return canWrite;
+            }
+
+            @Override public void end() { throw new UnsupportedOperationException(); }
+            @Override public boolean isEnded() { return false; }
+        });
+    }
+
+    default int read(IByteWriter writer) {
+        int totalReaded = 0;
+
+        final int BUFFER_SIZE = 1024;
+        byte[] buffer = new byte[BUFFER_SIZE];
+
+        while (true) {
+            int written = writer.write(buffer);
+            if (written == 0) break;
+
+            totalReaded += this.read(buffer, 0, written);
+        }
+
         return totalReaded;
     }
 
-    default boolean isEnd() { return false; }
-
-    default boolean canPopBuffer() { return false; }
-
-    /**
-     * Pure wizardy, returns buffer, that uses underlying implementation.
-     * And implementation guarantees, that this buffer will not used anymore by it.
-     * @return
-     */
-    default PoppedBuffer popBuffer() { return null; }
+    void end();
+    boolean isEnded();
 }

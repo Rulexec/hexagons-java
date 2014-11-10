@@ -42,7 +42,7 @@ public class AsyncStreamUtil {
                     output.requestWriting();
                 }
 
-                if (reader.isEnd()) {
+                if (reader.isEnded()) {
                     if (c.buffersCount == 0 && (c.offset - c.writingOffset) == 0) {
                         output.end();
                     } else {
