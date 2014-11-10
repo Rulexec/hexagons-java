@@ -1,5 +1,7 @@
 package by.muna.io;
 
+import by.muna.monads.IAsyncFuture;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -12,6 +14,7 @@ public interface IAsyncByteInputStream {
      */
     void onCanRead(Function<IByteReader, Boolean> reader);
 
-    void end();
     boolean isEnded();
+    IAsyncFuture<Object> end();
+    IAsyncFuture<Object> onEnd();
 }

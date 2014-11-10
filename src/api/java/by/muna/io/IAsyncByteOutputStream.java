@@ -1,5 +1,7 @@
 package by.muna.io;
 
+import by.muna.monads.IAsyncFuture;
+
 import java.util.function.Function;
 
 public interface IAsyncByteOutputStream {
@@ -14,6 +16,7 @@ public interface IAsyncByteOutputStream {
      */
     void onCanWrite(Function<IByteWriter, Boolean> writer);
 
-    void end();
     boolean isEnded();
+    IAsyncFuture<Object> end();
+    IAsyncFuture<Object> onEnd();
 }
