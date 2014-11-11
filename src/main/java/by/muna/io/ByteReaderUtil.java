@@ -1,11 +1,30 @@
-package by.muna.util;
-
-import by.muna.io.IByteReader;
-import by.muna.io.IByteWriter;
+package by.muna.io;
 
 import java.nio.ByteBuffer;
 
 public class ByteReaderUtil {
+    public static IByteReader empty() {
+        return new IByteReader() {
+            @Override
+            public int read(byte[] buffer, int offset, int length) {
+                return 0;
+            }
+
+            @Override
+            public int read(ByteBuffer buffer) {
+                return 0;
+            }
+
+            @Override
+            public int read(IByteWriter writer) {
+                return 0;
+            }
+
+            @Override public void end() {}
+            @Override public boolean isEnded() { return true; }
+        };
+    }
+
     public static void flush(IByteReader reader) {
         reader.read(new IByteWriter() {
             @Override
