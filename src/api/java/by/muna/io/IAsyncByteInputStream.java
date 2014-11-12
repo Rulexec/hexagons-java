@@ -10,7 +10,7 @@ public interface IAsyncByteInputStream {
 
     /**
      *
-     * @param reader returns true, if want read more
+     * @param reader returns true, if want read more (equivalent to call requestReading, but it can be more effective)
      */
     void onCanRead(Function<IByteReader, Boolean> reader);
 

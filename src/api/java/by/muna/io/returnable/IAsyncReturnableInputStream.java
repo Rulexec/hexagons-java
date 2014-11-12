@@ -1,6 +1,7 @@
 package by.muna.io.returnable;
 
 import by.muna.io.AsyncInputStreamUtil;
+import by.muna.io.ByteReaderUtil;
 import by.muna.io.IAsyncByteInputStream;
 import by.muna.io.IByteReader;
 import by.muna.monads.IAsyncFuture;
@@ -17,8 +18,8 @@ public interface IAsyncReturnableInputStream extends IAsyncByteInputStream {
 
     @Override
     default IAsyncFuture<Object> end() {
-        return this.end(AsyncInputStreamUtil.empty());
+        return this.end(ByteReaderUtil.empty());
     }
 
-    IAsyncFuture<Object> end(IAsyncByteInputStream rest);
+    IAsyncFuture<Object> end(IByteReader rest);
 }
