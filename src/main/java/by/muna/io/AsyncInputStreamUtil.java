@@ -10,8 +10,8 @@ public class AsyncInputStreamUtil {
             private Function<IByteReader, Boolean> listener;
 
             @Override
-            public void requestReading() {
-                this.listener.apply(ByteReaderUtil.empty());
+            public void requestReading(boolean request) {
+                if (request) this.listener.apply(ByteReaderUtil.empty());
             }
 
             @Override

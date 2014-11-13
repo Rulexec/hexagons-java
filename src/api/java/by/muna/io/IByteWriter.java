@@ -6,6 +6,12 @@ import java.nio.ByteBuffer;
  * Must implement or write(byte[], ...), or write(ByteBuffer)
  */
 public interface IByteWriter {
+    /**
+     * This is only hint, zero means not no possible output, but it can mean unknown possible output size.
+     * @return
+     */
+    default int available() { return 0; }
+
     default int write(byte[] buffer) {
         return this.write(buffer, 0, buffer.length);
     }
@@ -23,23 +29,8 @@ public interface IByteWriter {
      * @return
      */
     default int write(ByteBuffer buffer) {
-        /*if (buffer.hasArray()) {
-            byte[] array = buffer.array();
-            int offset = buffer.arrayOffset();
-            int length = buffer.remaining();
-
-            return this.write(array, offset, length);
-        } else {
-            int position = buffer.position();
-
-            byte[] array = new byte[buffer.remaining()];
-
-            buffer.get(array);
-            buffer.position(position);
-
-            return this.write(array, 0, array.length);
-        }*/
-        return this.write(new IByteReader() {
+        int position = buffer.position();
+        int written = this.write(new IByteReader() {
             @Override
             public int read(byte[] buff, int offset, int length) {
                 int canRead = Math.min(length, buffer.remaining());
@@ -65,8 +56,17 @@ public interface IByteWriter {
                 return false;
             }
         });
+
+        buffer.position(position + written);
+        return written;
     }
 
+    /**
+     * Caller of this method must use return of this method, because implementation can get from reader more data,
+     * than actually used.
+     * @param reader
+     * @return
+     */
     default int write(IByteReader reader) {
         int totalWritten = 0;
 
@@ -77,7 +77,9 @@ public interface IByteWriter {
             int readed = reader.read(buffer);
             if (readed == 0) break;
 
-            totalWritten += this.write(buffer, 0, readed);
+            int written = this.write(buffer, 0, readed);
+            totalWritten += written;
+            if (readed > written) break;
         }
 
         return totalWritten;

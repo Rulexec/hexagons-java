@@ -23,27 +23,8 @@ public interface IByteReader {
     }
 
     default int read(ByteBuffer buffer) {
-        /*final int BUFFER_SIZE = Math.max(1024, this.available());
-
-        byte[] array = new byte[BUFFER_SIZE];
-        int offset = 0;
-
-        int totalReaded = 0;
-
-        while (buffer.hasRemaining()) {
-            int readed = this.read(array, offset, BUFFER_SIZE);
-            if (readed == 0) break;
-
-            buffer.put(array, offset, readed);
-
-            offset += readed;
-            if (offset == BUFFER_SIZE) offset = 0;
-
-            totalReaded += readed;
-        }
-
-        return totalReaded;*/
-        return this.read(new IByteWriter() {
+        int position = buffer.position();
+        int readed = this.read(new IByteWriter() {
             @Override
             public int write(ByteBuffer buff) {
                 int canWrite = Math.min(buff.remaining(), buffer.remaining());
@@ -62,8 +43,16 @@ public interface IByteReader {
             @Override public void end() { throw new UnsupportedOperationException(); }
             @Override public boolean isEnded() { return false; }
         });
+        buffer.position(readed);
+        return readed;
     }
 
+    /**
+     * Caller of this method must use return of this method, because implementation can get from writer more data,
+     * than actually used.
+     * @param writer
+     * @return
+     */
     default int read(IByteWriter writer) {
         int totalReaded = 0;
 
@@ -74,7 +63,9 @@ public interface IByteReader {
             int written = writer.write(buffer);
             if (written == 0) break;
 
-            totalReaded += this.read(buffer, 0, written);
+            int readed = this.read(buffer, 0, written);
+            totalReaded += readed;
+            if (written > readed) break;
         }
 
         return totalReaded;

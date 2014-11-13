@@ -6,7 +6,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface IAsyncByteInputStream {
-    void requestReading();
+    default void requestReading() { this.requestReading(true); }
+
+    /**
+     * @param request false, if want to cancel request
+     */
+    void requestReading(boolean request);
 
     /**
      *
