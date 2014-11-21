@@ -1,8 +1,8 @@
-package by.muna.monads.tests;
+package by.muna.async.tests;
 
-import by.muna.monads.AsyncMonadPure;
-import by.muna.monads.AsyncMonadUtil;
-import by.muna.monads.IAsyncMonad;
+import by.muna.async.AsyncPure;
+import by.muna.async.AsyncUtil;
+import by.muna.async.IAsync;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,12 +14,12 @@ public class AsyncMonadBasicTest {
     @Test
     public void basicTest() {
         // just some crzy useless things
-        Function<IAsyncMonad<Integer, Object>, IAsyncMonad<Integer, Object>> f = AsyncMonadUtil.composeFL(
-            m -> m.bind(x -> new AsyncMonadPure<Integer, Object>(x * 3)),
-            m -> m.bind(x -> new AsyncMonadPure<Integer, Object>(x + 7))
+        Function<IAsync<Integer, Object>, IAsync<Integer, Object>> f = AsyncUtil.composeFL(
+            m -> m.bind(x -> new AsyncPure<Integer, Object>(x * 3)),
+            m -> m.bind(x -> new AsyncPure<Integer, Object>(x + 7))
         );
 
-        f.apply(new AsyncMonadPure<Integer, Object>(4)).run((x, e) -> {
+        f.apply(new AsyncPure<Integer, Object>(4)).run((x, e) -> {
             Assert.assertNotNull(x);
             Assert.assertEquals(4 * 3 + 7, (int) x);
             Assert.assertNull(e);
@@ -28,14 +28,14 @@ public class AsyncMonadBasicTest {
 
     @Test
     public void skipTimerTest() {
-        IAsyncMonad<Object, Object> delay = callback -> new Timer().schedule(new TimerTask() {
+        IAsync<Object, Object> delay = callback -> new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 callback.accept(null, null);
             }
         }, 1);
 
-        delay.skip(new AsyncMonadPure<Integer, Object>(42)).run((x, e) -> {
+        delay.skip(new AsyncPure<Integer, Object>(42)).run((x, e) -> {
             Assert.assertNotNull(x);
             Assert.assertEquals(42, (int) x);
             Assert.assertNull(e);

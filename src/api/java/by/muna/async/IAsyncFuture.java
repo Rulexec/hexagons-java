@@ -1,4 +1,4 @@
-package by.muna.monads;
+package by.muna.async;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,5 +16,5 @@ public interface IAsyncFuture<T> {
         return callback -> IAsyncFuture.this.run(x -> callback.accept(f.apply(x)));
     }
 
-    public void run(Consumer<T> callback);
+    public IAsyncRunning run(Consumer<T> callback);
 }

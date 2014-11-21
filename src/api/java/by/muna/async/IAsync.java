@@ -1,4 +1,4 @@
-package by.muna.monads;
+package by.muna.async;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -9,14 +9,14 @@ import java.util.function.Function;
  * @param <E>
  */
 @FunctionalInterface
-public interface IAsyncMonad<R, E> {
-    default <NR> IAsyncMonad<NR, E> bind(Function<R, IAsyncMonad<NR, E>> f) {
+public interface IAsync<R, E> {
+    default <NR> IAsync<NR, E> bind(Function<R, IAsync<NR, E>> f) {
         return this.bind(f, x -> x);
     }
-    default <NR, NE> IAsyncMonad<NR, NE> bind(Function<R, IAsyncMonad<NR, NE>> f, Function<E, NE> convertError) {
-        return callback -> IAsyncMonad.this.run((x, e) -> {
+    default <NR, NE> IAsync<NR, NE> bind(Function<R, IAsync<NR, NE>> f, Function<E, NE> convertError) {
+        return callback -> IAsync.this.run((x, e) -> {
             if (e == null) {
-                IAsyncMonad<NR, NE> m = f.apply(x);
+                IAsync<NR, NE> m = f.apply(x);
                 m.run(callback);
             } else {
                 callback.accept(null, convertError.apply(e));
@@ -24,8 +24,8 @@ public interface IAsyncMonad<R, E> {
         });
     }
 
-    default <NR> IAsyncMonad<NR, E> skip(IAsyncMonad<NR, E> m) {
-        return callback -> IAsyncMonad.this.run((x, e) -> {
+    default <NR> IAsync<NR, E> skip(IAsync<NR, E> m) {
+        return callback -> IAsync.this.run((x, e) -> {
             if (e == null) {
                 m.run(callback);
             } else {
@@ -34,8 +34,8 @@ public interface IAsyncMonad<R, E> {
         });
     }
 
-    default <NR> IAsyncMonad<NR, E> fmap(Function<R, NR> f) {
-        return callback -> IAsyncMonad.this.run((x, e) -> {
+    default <NR> IAsync<NR, E> fmap(Function<R, NR> f) {
+        return callback -> IAsync.this.run((x, e) -> {
             if (e == null) {
                 callback.accept(f.apply(x), null);
             } else {
@@ -44,5 +44,5 @@ public interface IAsyncMonad<R, E> {
         });
     }
 
-    public void run(BiConsumer<R, E> callback);
+    public IAsyncRunning run(BiConsumer<R, E> callback);
 }

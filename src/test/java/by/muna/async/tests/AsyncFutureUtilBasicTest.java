@@ -1,12 +1,11 @@
-package by.muna.monads.tests;
+package by.muna.async.tests;
 
-import by.muna.monads.AsyncFutureUtil;
+import by.muna.async.AsyncFutureUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class AsyncFutureUtilBasicTest {

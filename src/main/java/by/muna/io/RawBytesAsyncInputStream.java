@@ -1,6 +1,6 @@
 package by.muna.io;
 
-import by.muna.monads.IAsyncFuture;
+import by.muna.async.IAsyncFuture;
 
 import java.util.function.Function;
 

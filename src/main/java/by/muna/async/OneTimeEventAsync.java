@@ -1,4 +1,4 @@
-package by.muna.monads;
+package by.muna.async;
 
 import by.muna.data.IEither;
 import by.muna.data.either.EitherLeft;
@@ -8,21 +8,23 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 
-public class OneTimeEventAsyncMonad<R, E> implements IAsyncMonad<R, E> {
+public class OneTimeEventAsync<R, E> implements IAsync<R, E> {
     private IEither<Queue<BiConsumer<R, E>>, IEither<E, R>> listenersOrValue = new EitherLeft<>(new LinkedList<>());
 
-    public OneTimeEventAsyncMonad() {}
+    public OneTimeEventAsync() {}
 
     @Override
-    public void run(BiConsumer<R, E> callback) {
+    public IAsyncRunning run(BiConsumer<R, E> callback) {
         if (this.listenersOrValue.isRight()) {
             IEither<E, R> r = this.listenersOrValue.getRight();
             callback.accept(r.getRight(), r.getLeft());
+            return AsyncRunningUtil.alreadyFinished();
         } else {
             synchronized (this) {
                 if (this.listenersOrValue.isRight()) {
                     IEither<E, R> r = this.listenersOrValue.getRight();
                     callback.accept(r.getRight(), r.getLeft());
+                    return AsyncRunningUtil.alreadyFinished();
                 } else {
                     this.listenersOrValue.getLeft().add(callback);
                 }

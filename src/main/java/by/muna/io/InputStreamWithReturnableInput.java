@@ -1,11 +1,10 @@
 package by.muna.io;
 
-import by.muna.monads.IAsyncFuture;
-import by.muna.monads.OneTimeEventAsyncFuture;
+import by.muna.async.IAsyncFuture;
+import by.muna.async.OneTimeEventAsyncFuture;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class InputStreamWithReturnableInput implements IAsyncByteInputStream {

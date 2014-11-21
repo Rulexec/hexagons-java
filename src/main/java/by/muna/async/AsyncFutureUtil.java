@@ -1,8 +1,9 @@
-package by.muna.monads;
+package by.muna.async;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -22,7 +23,7 @@ public class AsyncFutureUtil {
         return AsyncFutureUtil.parallel(futures, x -> x != null);
     }
     public static <T> IAsyncFuture<T> parallel(Collection<IAsyncFuture<T>> futures, Predicate<T> isFinal) {
-        return callback -> {
+        return AsyncFutureUtil.cannotBeStopped(callback -> {
             AtomicBoolean finished = new AtomicBoolean(false);
             AtomicInteger finishedCount = new AtomicInteger(0);
 
@@ -44,6 +45,13 @@ public class AsyncFutureUtil {
                     }
                 });
             }
+        });
+    }
+
+    public static <T> IAsyncFuture<T> cannotBeStopped(Consumer<Consumer<T>> consumer) {
+        return callback -> {
+            consumer.accept(callback);
+            return new IAsyncRunning() {};
         };
     }
 }

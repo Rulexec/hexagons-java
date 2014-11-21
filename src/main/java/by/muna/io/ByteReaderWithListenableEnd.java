@@ -1,7 +1,7 @@
 package by.muna.io;
 
-import by.muna.monads.IAsyncFuture;
-import by.muna.monads.OneTimeEventAsyncFuture;
+import by.muna.async.IAsyncFuture;
+import by.muna.async.OneTimeEventAsyncFuture;
 
 import java.nio.ByteBuffer;
 

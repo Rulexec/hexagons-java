@@ -1,4 +1,4 @@
-package by.muna.monads;
+package by.muna.async;
 
 import by.muna.data.IEither;
 import by.muna.data.either.EitherLeft;
