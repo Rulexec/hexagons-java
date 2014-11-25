@@ -54,4 +54,11 @@ public class AsyncFutureUtil {
             return new IAsyncRunning() {};
         };
     }
+
+    public static <T> IAsyncFuture<T> alreadyFinished(Consumer<Consumer<T>> consumer) {
+        return callback -> {
+            consumer.accept(callback);
+            return AsyncRunningUtil.alreadyFinished();
+        };
+    }
 }

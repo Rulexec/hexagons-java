@@ -1,5 +1,5 @@
 package by.muna.data;
 
-public interface IPairMutable<F, S> extends ISingleMutable<F>, IPair<F, S> {
+public interface IPairMutable<F, S> extends IPair<F, S>, ISingleMutable<F> {
     void setSecond(S value);
 }

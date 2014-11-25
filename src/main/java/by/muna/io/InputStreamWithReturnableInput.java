@@ -1,5 +1,6 @@
 package by.muna.io;
 
+import by.muna.async.AsyncRunningUtil;
 import by.muna.async.IAsyncFuture;
 import by.muna.async.OneTimeEventAsyncFuture;
 
@@ -110,6 +111,8 @@ public class InputStreamWithReturnableInput implements IAsyncByteInputStream {
             this.ended = true;
 
             this.stream.end().run(callback);
+
+            return AsyncRunningUtil.alreadyFinished();
         };
     }
 }
