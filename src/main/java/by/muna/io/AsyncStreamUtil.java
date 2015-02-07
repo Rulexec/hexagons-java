@@ -1,6 +1,8 @@
 package by.muna.io;
 
-import java.util.function.BiConsumer;
+import by.muna.buffers.bytes.IBytesBuffer;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AsyncStreamUtil {
     public static void pipe(IAsyncByteInputStream input, IAsyncByteOutputStream output) {
@@ -9,58 +11,45 @@ public class AsyncStreamUtil {
 
     public static void pipe(IAsyncByteInputStream input, IAsyncByteOutputStream output, boolean closeOutputIfInputClosed)
     {
-        class Container {
-            IByteReader reader;
-            IByteWriter writer;
-        }
+        AtomicBoolean inPumping = new AtomicBoolean(false);
 
+        AtomicBoolean canRead = new AtomicBoolean(false);
+        AtomicBoolean canWrite = new AtomicBoolean(false);
+
+        final IBytesBuffer buffer = input.read();
+
+        class Container {
+            void possible(boolean isRead) {
+                if (isRead ? canWrite.get() : canRead.get()) {
+                    while (true) {
+                        if (!inPumping.compareAndSet(false, true)) return;
+
+                        canRead.set(false);
+                        canWrite.set(false);
+
+                        while (true) {
+                            int written = output.write(buffer);
+
+                            if (written > 0) buffer.take(written);
+                            else break;
+                        }
+
+                        inPumping.set(false);
+
+                        if (!(canRead.get() && canWrite.get())) break;
+                    }
+                }
+            }
+        }
         Container c = new Container();
 
-        input.onCanRead(reader -> {
-            if (reader.isEnded()) {
-                synchronized (c) { c.reader = null; }
-                output.requestWriting(false);
-                return false;
-            }
-
-            c.reader = reader;
-            synchronized (c) {
-                if (c.writer != null) {
-                    reader.read(c.writer);
-                }
-            }
-
-            output.requestWriting();
-
-            return false;
+        input.onCanRead(readHints -> {
+            if (canRead.compareAndSet(false, true)) c.possible(true);
         });
-        output.onCanWrite(writer -> {
-            if (writer.isEnded()) {
-                synchronized (c) { c.writer = null; }
-                input.requestReading(false);
-                return false;
-            }
-
-            c.writer = writer;
-            synchronized (c) {
-                if (c.reader != null) {
-                    // TODO: it's very dangerous to use old reader, because of our InputStreamWithReturnableInput
-                    // implementation, for example. Here can be outdated reader
-                    // (if input was returned and after that onCanWrite event happened)
-                    // I must rewrite InputStreamWithReturnableInput in such order to exclude this possibility
-                    // and guarantee, that reader, passed to onCanRead never outdates.
-                    writer.write(c.reader);
-                }
-            }
-
-            input.requestReading();
-
-            return false;
+        output.onCanWrite(writeHints -> {
+            if (canWrite.compareAndSet(false, true)) c.possible(false);
         });
 
         if (closeOutputIfInputClosed) input.onEnd().skip(output.end());
-
-        input.requestReading();
-        output.requestWriting();
     }
 }

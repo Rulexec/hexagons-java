@@ -1,6 +1,7 @@
 package by.muna.async.tests;
 
 import by.muna.async.AsyncFutureUtil;
+import by.muna.async.IAsyncFuture;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,15 +19,24 @@ public class AsyncFutureUtilBasicTest {
 
         Container c = new Container();
 
-        AsyncFutureUtil.parallel(Arrays.asList(
-            callback -> { c.list.add(1); callback.accept(null); },
-            callback -> { c.list.add(2); callback.accept(null); },
-            callback -> { c.list.add(3); callback.accept(null); }
+        AsyncFutureUtil.parallel(Arrays.<IAsyncFuture<Object>>asList(
+            AsyncFutureUtil.cannotBeStopped(callback -> {
+                c.list.add(1);
+                callback.accept(null);
+            }),
+            AsyncFutureUtil.cannotBeStopped(callback -> {
+                c.list.add(2);
+                callback.accept(null);
+            }),
+            AsyncFutureUtil.cannotBeStopped(callback -> {
+                c.list.add(3);
+                callback.accept(null);
+            })
         )).run(x -> {
             Assert.assertNull(x);
 
             Assert.assertEquals(3, c.list.size());
-            Assert.assertArrayEquals(new Integer[] { 1, 2, 3 }, c.list.toArray());
+            Assert.assertArrayEquals(new Integer[] {1, 2, 3}, c.list.toArray());
 
             c.runned = true;
         });
@@ -43,9 +53,9 @@ public class AsyncFutureUtilBasicTest {
         Container c = new Container();
 
         AsyncFutureUtil.<Boolean>parallel(Arrays.asList(
-            callback -> callback.accept(null),
-            callback -> callback.accept(Boolean.TRUE),
-            callback -> callback.accept(Boolean.FALSE)
+            AsyncFutureUtil.cannotBeStopped(callback -> callback.accept(null)),
+            AsyncFutureUtil.cannotBeStopped(callback -> callback.accept(Boolean.TRUE)),
+            AsyncFutureUtil.cannotBeStopped(callback -> callback.accept(Boolean.FALSE))
         )).run(x -> {
             Assert.assertEquals(Boolean.TRUE, x);
 

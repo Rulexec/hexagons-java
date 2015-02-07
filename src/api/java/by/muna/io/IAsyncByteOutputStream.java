@@ -1,24 +1,24 @@
 package by.muna.io;
 
 import by.muna.async.IAsyncFuture;
+import by.muna.buffers.bytes.IBytesBuffer;
+import by.muna.io.output.IAsyncByteOutputStreamOnWrite;
+import by.muna.pubsub.ISubscription;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public interface IAsyncByteOutputStream {
-    default void requestWriting() { this.requestWriting(true); }
-    /**
-     * This method can be called only after setting consumer, else behaviour is undefined.
-     * @param request false, if want to cancel request
-     */
-    void requestWriting(boolean request);
+    ISubscription onCanWrite(Consumer<IAsyncByteOutputStreamOnWrite> callback);
 
-    /**
-     * You must use IByteWriter methods only in scope of consumer execution. Else behaviour is undefined.
-     * @param writer returns true, if want write more
-     */
-    void onCanWrite(Function<IByteWriter, Boolean> writer);
+    int write(IBytesBuffer buffer);
 
     boolean isEnded();
     IAsyncFuture<Object> end();
     IAsyncFuture<Object> onEnd();
+
+    /**
+     * Hint to output stream, that next write potentially will be >= size
+     * @param size
+     */
+    default void hintCapacity(int size) {}
 }

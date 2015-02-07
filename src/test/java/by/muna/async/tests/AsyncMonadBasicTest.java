@@ -28,12 +28,12 @@ public class AsyncMonadBasicTest {
 
     @Test
     public void skipTimerTest() {
-        IAsync<Object, Object> delay = callback -> new Timer().schedule(new TimerTask() {
+        IAsync<Object, Object> delay = AsyncUtil.cannotBeStopped(callback -> new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 callback.accept(null, null);
             }
-        }, 1);
+        }, 1));
 
         delay.skip(new AsyncPure<Integer, Object>(42)).run((x, e) -> {
             Assert.assertNotNull(x);
