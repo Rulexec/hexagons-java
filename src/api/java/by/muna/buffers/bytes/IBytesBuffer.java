@@ -3,15 +3,15 @@ package by.muna.buffers.bytes;
 import java.util.Iterator;
 
 /**
- * Byte buffer, that has one writer and one reader&writer.
+ * <p>Byte buffer, that has one writer and one reader&amp;writer.
  * Writing can be done only to the end of the buffer,
- * writer can only write and nothing else.
+ * writer can only write and nothing else.</p>
  *
- * Reader&Writer can read, write, remove bytes from buffer,
- * and also have a position, that can move around.
+ * <p>Reader&amp;Writer can read, write, remove bytes from buffer,
+ * and also have a position, that can move around.</p>
  *
- * Position can be used by implementation to optimize getting new data from the buffer
- * (for example, if this implementation based on linked list, it can hold ListIterator near position).
+ * <p>Position can be used by implementation to optimize getting new data from the buffer
+ * (for example, if this implementation based on linked list, it can hold ListIterator near position).</p>
  */
 public interface IBytesBuffer {
     int size();

@@ -4,9 +4,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
- * Actually it must be abstract class with final methods. But then we cannot create anonymous implementation with lambda syntax.
+ * <p>Actually it must be abstract class with final methods. But then we cannot create anonymous implementation with
+ * lambda syntax.</p>
  *
- * This is actually IAsyncFuture<IEither<E, R>>, that binds on R, and didn't nothing on E.
+ * <p>This is actually IAsyncFuture&lt;IEither&lt;E, R&gt;&gt;, that binds on R, and didn't nothing on E.</p>
  * @param <R>
  * @param <E>
  */

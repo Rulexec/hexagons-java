@@ -17,7 +17,7 @@ public interface IAsyncByteOutputStream {
     IAsyncFuture<Object> onEnd();
 
     /**
-     * Hint to output stream, that next write potentially will be >= size
+     * Hint to output stream, that next write potentially will be &gt;= size
      * @param size
      */
     default void hintCapacity(int size) {}

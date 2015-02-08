@@ -17,7 +17,7 @@ public interface IAsyncByteInputStream {
     IAsyncFuture<Object> onEnd();
 
     /**
-     * Hint to the input stream, that bytes will be taken from buffer, when buffer size will >= count.
+     * Hint to the input stream, that bytes will be taken from buffer, when buffer size will &gt;= count.
      * @param count
      */
     default void hintBytesRequirement(int count) {}
