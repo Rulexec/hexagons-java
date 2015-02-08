@@ -4,14 +4,13 @@ import java.util.Iterator;
 
 /**
  * <p>Byte buffer, that has one writer and one reader&amp;writer.
- * Writing can be done only to the end of the buffer,
- * writer can only write and nothing else.</p>
+ * Writer can only write to the end of buffer and nothing else.</p>
  *
  * <p>Reader&amp;Writer can read, write, remove bytes from buffer,
- * and also have a position, that can move around.</p>
+ * and also have a number of positions, that can move around.</p>
  *
- * <p>Position can be used by implementation to optimize getting new data from the buffer
- * (for example, if this implementation based on linked list, it can hold ListIterator near position).</p>
+ * <p>Positions can be used by implementation to optimize getting data from the buffer
+ * (for example, if this implementation based on linked list, it can hold ListIterators near positions).</p>
  */
 public interface IBytesBuffer {
     int size();
@@ -21,27 +20,29 @@ public interface IBytesBuffer {
     }
     void remove(int offset, int length);
 
-    void position(int pos);
-    int position();
+    int position(int id);
+    void position(int id, int pos);
 
-    /**
-     * @return Part of the buffer after the position, not shifts the position.
-     */
+    int positions();
+    void positions(int count);
+
     default IBytesBufferPart get() {
-        int pos = this.position();
-        return this.get(pos, this.size() - pos).next();
+        return this.get(this.position(0));
+    }
+    default IBytesBufferPart get(int offset) {
+        return this.get(offset, 0).next();
     }
 
     /**
      * @param offset
-     * @param length
-     * @return Parts of the buffer, not shifts the position.
+     * @param length If length == 0, get all, that can.
+     * @return Parts of the buffer,
      *         .remove() on the iterator will really remove part from the buffer.
      */
     Iterator<IBytesBufferPart> get(int offset, int length);
 
     default IBytesBufferPart blockingGet() throws InterruptedException {
-        return this.blockingGet(this.position());
+        return this.blockingGet(this.position(0));
     }
 
     /**
@@ -54,8 +55,9 @@ public interface IBytesBuffer {
 
     /**
      * @return True, if you have successfully acquired exclusive appending rights.
+     * @param offset Offset, to where we will insert bytes.
      */
-    boolean startAppending();
+    boolean startAppending(int offset);
 
     /**
      * Waits for acquiring exclusive appending rights.
@@ -63,7 +65,7 @@ public interface IBytesBuffer {
      *         False, if someone called {@link #wakeup()} method.
      * @throws InterruptedException
      */
-    boolean blockingStartAppending() throws InterruptedException;
+    boolean blockingStartAppending(int offset) throws InterruptedException;
 
     /**
      * @param usedInLastPart Size of last buffer part, that actually used.
